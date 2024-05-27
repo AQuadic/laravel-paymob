@@ -10,7 +10,6 @@ return [
         'currency'        => 'EGP',
         'exp_after'       => 10, // seconds
         'min_amount'      => 5, // pounds
-        'hmac'        => env('ACCEPT_HMAC'),
         'url'             => [
             'token'       => 'https://accept.paymob.com/api/auth/tokens',
             'order'       => 'https://accept.paymob.com/api/ecommerce/orders',
