@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use ctf0\PayMob\Facades\PayMob;
 use ctf0\PayMob\Integrations\CreditCard;
+use ctf0\PayMob\Integrations\MobileWallet;
 use Illuminate\Http\Client\RequestException;
 
 class DummyController extends Controller
@@ -36,7 +37,13 @@ class DummyController extends Controller
         $total        = 0; // order total
 
         try {
-            return (new CreditCard($user))->checkOut($total); // or MobileWallet, etc..
+            if ($payment_type == 'card_payment') {
+                return (new CreditCard($user))->checkOut($total)['url'] ?? '';
+            } else if ($payment_type == 'mobile_wallet') {
+                return (new MobileWallet($user))->checkOut($total)['url'] ?? '';
+            } else {
+                abort(403, __('Method not supported')); // // or MobileWallet, etc..
+            }
         } catch (RequestException $e) {
             return __('something went wrong, please try again later');
         }
