@@ -25,6 +25,7 @@ class MobileWallet extends Accept
 
         $url      = $this->getConfigKey($this->getPaymentTypeConfig('url'));
         $order_id = $this->orderRegistration($items, $total);
+        $payment_token = $this->paymentKeyRequest($order_id, $total);
 
         $response = Http::withToken($this->auth_token)
             ->post($url, [
@@ -32,10 +33,18 @@ class MobileWallet extends Accept
                     'identifier' => $this->user->phone_number,
                     'subtype'    => 'WALLET',
                 ],
-                'payment_token' => $this->paymentKeyRequest($order_id, $total),
+                'payment_token' => $payment_token,
             ])
             ->throw();
 
-        return $response['redirect_url'] ?: abort(417, __('paymob::messages.url_required'));
+        if (!$response['redirect_url']) {
+            abort(417, __('paymob::messages.url_required'));
+        }
+
+        return [
+            'url' => $response['redirect_url'],
+            'order_id' => $order_id,
+            'payment_token' => $payment_token,
+        ];
     }
 }

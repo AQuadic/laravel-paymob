@@ -24,8 +24,12 @@ class CreditCard extends Accept
         $order_id      = $this->orderRegistration($items, $total);
         $payment_token = $this->paymentKeyRequest($order_id, $total);
 
-        return $this->getConfigKey($this->getPaymentTypeConfig('url')) .
+        return [
+            'url' => $this->getConfigKey($this->getPaymentTypeConfig('url')) .
                 '?' .
-                http_build_query(['payment_token' => $payment_token]);
+                http_build_query(['payment_token' => $payment_token]),
+            'order_id' => $order_id,
+            'payment_token' => $payment_token,
+        ];
     }
 }
